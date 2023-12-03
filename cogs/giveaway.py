@@ -3,6 +3,7 @@ import datetime
 import sqlite3
 import asyncio
 import random
+from config import staff_role
 from nextcord.ext import commands
 from nextcord.ui import Button, View
 
@@ -132,9 +133,13 @@ class Giveaway(commands.Cog):
 
     @nextcord.slash_command(name='givecreate', description='Создать розыгрыш')
     async def givecreate(self, interaction: nextcord.Interaction):
-        global channel_id
-        channel_id = interaction.channel_id
-        await interaction.response.send_modal(GCModal())
+        role = interaction.guild.get_role(staff_role)
+        if role in interaction.user.roles: 
+            global channel_id
+            channel_id = interaction.channel_id
+            await interaction.response.send_modal(GCModal())
+        else:
+            await interaction.send('Ошибка доступа')
 
 def setup(bot):
     bot.add_cog(Giveaway(bot))
